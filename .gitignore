@@ -1,0 +1,19 @@
+# Ignore all environment files (containing passwords or credentials)
+*.env
+
+# Ignore Redis data (temporary or cache data)
+redis/**
+
+# Ignore database data, but allow data dumps
+db/**
+
+# Ignore certificate files (e.g., SSL, private keys)
+*.cert
+*.pem
+
+# Ignore all Pi-hole data, as you'll copy the entire folder
+pihole/**
+
+# Ignore all files inside the Nextcloud folder
+appdata/*
+
