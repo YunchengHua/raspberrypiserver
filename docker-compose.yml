@@ -42,15 +42,6 @@ services:
       - ./cloudflare.env
     command: tunnel --no-autoupdate run
 
-  nginx:
-    image: nginx:alpine
-    restart: unless-stopped
-    ports:
-      - "443:443"
-    volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./cloudflare/certs:/etc/nginx/certs
-
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
