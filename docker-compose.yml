@@ -1,0 +1,69 @@
+services:
+  nextcloud:
+    image: linuxserver/nextcloud:latest
+    container_name: nextcloud
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    volumes:
+      - /mnt/nextcloud-data:/data
+      - ./appdata:/config
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: mariadb:10.11
+    container_name: nextcloud-db
+    restart: unless-stopped
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    env_file:
+      - ./db.env
+    environment:
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    volumes:
+      - ./db:/var/lib/mysql
+    ports:
+      - "3307:3306"
+
+  redis:
+    image: redis:alpine
+    container_name: nextcloud-redis
+    restart: unless-stopped
+    volumes:
+      - ./redis:/data
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: unless-stopped
+    env_file:
+      - ./cloudflare.env
+    command: tunnel --no-autoupdate run
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./cloudflare/certs:/etc/nginx/certs
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    restart: unless-stopped
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8443:443/tcp"  # Expose web on port 8443
+    env_file:
+      - ./pihole.env
+    environment:
+      TZ: "Your/Timezone"  # Update your timezone (e.g., "America/New_York")
+    volumes:
+      - ./pihole/pihole:/etc/pihole
+      - ./pihole/dnsmasq.d:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN  # Required for networking
