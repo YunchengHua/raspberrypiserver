@@ -53,7 +53,7 @@ services:
     env_file:
       - ./pihole.env
     environment:
-      TZ: "Your/Timezone"  # Update your timezone (e.g., "America/New_York")
+      TZ: "Asia/Singapore"  
     volumes:
       - ./pihole/pihole:/etc/pihole
       - ./pihole/dnsmasq.d:/etc/dnsmasq.d
